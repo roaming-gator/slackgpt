@@ -1,0 +1,61 @@
+---
+name: Deploy SlackGPT Resources to AWS using Terraform
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  deploy_resources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure Terraform backend
+        run: |
+          cd terraform
+          cat > backend.tf << EOF
+          terraform {
+            backend "s3" {
+              bucket         = "${{ vars.TF_BACKEND_S3_BUCKET }}"
+              key            = "terraform/state"
+              region         = "${{ vars.AWS_REGION }}"
+            }
+          }
+          EOF
+
+      - name: Terraform Initialize
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Terraform Validate
+        run: |
+          cd terraform
+          terraform validate
+
+      - name: Terraform Plan
+        run: |
+          cd terraform
+          terraform plan
+
+      - name: Terraform Apply
+        run: |
+          cd terraform
+          terraform apply -auto-approve
