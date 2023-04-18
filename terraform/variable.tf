@@ -5,7 +5,7 @@ variable "dynamodb_table_name" {
 
 variable "secret_mgr_path" {
   description = "Path to store secrets in AWS secret manager"
-  default     = "slackgpt-prod"
+  default     = "slackgpt"
 }
 
 variable "openai_default_chat_model" {
