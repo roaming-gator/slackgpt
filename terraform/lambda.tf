@@ -4,7 +4,7 @@ resource "aws_lambda_function" "this" {
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "python3.9"
-  handler          = "lambda.main.lambda_handler"
+  handler          = "app.main.lambda_handler"
   timeout          = 60
   depends_on = [
     data.archive_file.python_lambda_package
