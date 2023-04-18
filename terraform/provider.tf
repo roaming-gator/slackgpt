@@ -10,6 +10,5 @@ terraform {
 }
 
 provider "aws" {
-  region                   = var.region
-  shared_credentials_files = [pathexpand("~/.aws/credentials")]
+  region = var.region
 }

@@ -3,17 +3,12 @@ import sys
 import time
 import hmac
 import hashlib
-import boto3
-import os
-import functools
 import json
 import logging
 import requests
-from dotenv import load_dotenv
-from . import secrets
+from . import secrets, env
+from .chat import Chat
 
-# load environment variables from .env file
-load_dotenv()
 
 # set default logging level to INFO and output to stdout
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
@@ -35,7 +30,8 @@ def validate_request(event, slack_signing_key):
         digestmod=hashlib.sha256,
     )
     calculated_signature = "v0=" + h.hexdigest()
-    logging.debug(f"calculated = {calculated_signature}, passed = {provided_signature}")
+    logging.debug(
+        f"calculated = {calculated_signature}, passed = {provided_signature}")
     if calculated_signature != provided_signature:
         logging.warn("Signatures dont match")
         return False
@@ -57,10 +53,7 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": challenge_answer}
     elif request_type == "event_callback":
         slack_event = slack_body_obj.get("event", {})
-        if (
-            slack_event.get("type") == "app_mention"
-            and slack_event.get("subtype") != "bot_message"
-        ):
+        if slack_event.get("type") == "app_mention":
             message = slack_event.get("text")
             channel = slack_event.get("channel")
             print(f"got a message: {message}")

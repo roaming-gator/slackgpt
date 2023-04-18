@@ -1,8 +1,3 @@
-variable "region" {
-  description = "The AWS region to deploy resources in."
-  default     = "us-east-1"
-}
-
 variable "dynamodb_table_name" {
   description = "Table to store app state."
   default     = "slackgpt"
@@ -11,6 +6,41 @@ variable "dynamodb_table_name" {
 variable "secret_mgr_path" {
   description = "Path to store secrets in AWS secret manager"
   default     = "slackgpt-prod"
+}
+
+variable "openai_default_chat_model" {
+  description = "Default chat model to use"
+  default     = "davinci"
+}
+
+variable "openai_api_key_secret_name" {
+  description = "Openai api key secret name in AWS secret manager"
+  default     = "openai_api_key"
+}
+
+variable "openai_api_key" {
+  description = "Openai api key"
+  sensitive   = true
+}
+
+variable "slack_signing_key_secret_name" {
+  description = "Slack signing key secret name in AWS secret manager"
+  default     = "slack_signing_key"
+}
+
+variable "slack_signing_key" {
+  description = "Slack signing key"
+  sensitive   = true
+}
+
+variable "slack_bot_token_secret_name" {
+  description = "Slack bot token secret name in AWS secret manager"
+  default     = "slock_bot_token"
+}
+
+variable "slack_bot_token" {
+  description = "Slack bot token"
+  sensitive   = true
 }
 
 variable "lambda_function_name" {
@@ -33,7 +63,7 @@ variable "api_gateway_name" {
   default     = "SlackGPT"
 }
 
-variable "environment" {
-  description = "Deployment environment"
-  default     = "prod"
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  default     = "us-east-1"
 }

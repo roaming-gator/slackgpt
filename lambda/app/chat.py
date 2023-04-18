@@ -1,15 +1,15 @@
 import os
 import boto3
 import openai
-from dotenv import load_dotenv
+from . import env
 
 
 class Chat:
-    def __init__(self, chatid, api_key, model="gpt-3.5-turbo"):
+    def __init__(self, chatid, api_key, model=env.openai_default_chat_model):
         openai.api_key = api_key
         self.model = model
         dynamodb = boto3.resource("dynamodb")
-        self.state_table = dynamodb.Table(os.environ["DYNAMODB_TABLE_NAME"])
+        self.state_table = dynamodb.Table(env.dynamodb_table_name)
         self.chatid = chatid
 
     def get_messages(self):
@@ -28,7 +28,8 @@ class Chat:
     def message(self, content):
         messages = self.get_messages()
         messages.append({"role": "system", "content": content})
-        chat = openai.ChatCompletion.create(model=self.model, messages=messages)
+        chat = openai.ChatCompletion.create(
+            model=self.model, messages=messages)
         response = chat["choices"][0]["message"]["content"]
         messages.append({"role": "assistant", "content": response})
         self.update_messages(messages)
