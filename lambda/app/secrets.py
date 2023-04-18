@@ -1,6 +1,6 @@
 import boto3
 import json
-import env
+from . import env
 
 
 client = boto3.client("secretsmanager")
