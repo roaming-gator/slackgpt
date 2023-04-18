@@ -1,5 +1,4 @@
 resource "aws_lambda_function" "this" {
-
   function_name    = var.lambda_function_name
   filename         = "package.zip"
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
@@ -7,6 +6,9 @@ resource "aws_lambda_function" "this" {
   runtime          = "python3.9"
   handler          = "lambda.main.lambda_handler"
   timeout          = 60
+  depends_on = [
+    data.archive_file.python_lambda_package
+  ]
 
   environment {
     variables = {
@@ -34,7 +36,4 @@ data "archive_file" "python_lambda_package" {
   # package the app directory
   source_dir  = "${path.module}/../lambda/"
   output_path = "package.zip"
-  depends_on = [
-    local_file.envvars
-  ]
 }

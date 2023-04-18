@@ -10,7 +10,7 @@ variable "secret_mgr_path" {
 
 variable "openai_default_chat_model" {
   description = "Default chat model to use"
-  default     = "davinci"
+  default     = "gpt-3.5-turbo"
 }
 
 variable "openai_api_key_secret_name" {
