@@ -6,6 +6,8 @@ from . import env
 _client = boto3.client("secretsmanager")
 _get_secret_value_response = _client.get_secret_value(
     SecretId=env.secrets_manager_secret_id)
+print(_get_secret_value_response)
+print(_get_secret_value_response["SecretString"])
 _secrets = json.loads(_get_secret_value_response["SecretString"])
 
 # export secret values
