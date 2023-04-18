@@ -28,6 +28,11 @@ variable "slack_bot_token" {
   sensitive   = true
 }
 
+variable "slack_bot_display_name" {
+  description = "Slack bot display name"
+  default     = "slackgpt"
+}
+
 variable "lambda_function_name" {
   description = "Name of the lambda function that runs our app"
   default     = "slackgpt"
