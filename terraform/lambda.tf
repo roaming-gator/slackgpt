@@ -14,9 +14,9 @@ resource "aws_lambda_function" "this" {
     variables = {
       DYNAMODB_TABLE_NAME           = aws_dynamodb_table.this.name
       SECRETS_MANAGER_SECRET_ID     = aws_secretsmanager_secret.this.arn
-      OPENAI_API_KEY_SECRET_NAME    = var.openai_api_key_secret_name
-      SLACK_SIGNING_KEY_SECRET_NAME = var.slack_signing_key_secret_name
-      SLACK_BOT_TOKEN_SECRET_NAME   = var.slack_bot_token_secret_name
+      OPENAI_API_KEY_SECRET_NAME    = local.openai_api_key_secret_name
+      SLACK_SIGNING_KEY_SECRET_NAME = local.slack_signing_key_secret_name
+      SLACK_BOT_TOKEN_SECRET_NAME   = local.slack_bot_token_secret_name
       OPENAI_DEFAULT_CHAT_MODEL     = var.openai_default_chat_model
     }
   }

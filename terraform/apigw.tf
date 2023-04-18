@@ -7,7 +7,7 @@ resource "aws_api_gateway_rest_api" "this" {
 resource "aws_api_gateway_resource" "proxy" {
   rest_api_id = aws_api_gateway_rest_api.this.id
   parent_id   = aws_api_gateway_rest_api.this.root_resource_id
-  path_part   = "slackgpt"
+  path_part   = var.api_gateway_resource_path
 }
 
 resource "aws_api_gateway_method" "proxy" {
@@ -27,8 +27,19 @@ resource "aws_api_gateway_integration" "lambda" {
 }
 
 resource "aws_api_gateway_deployment" "this" {
-  depends_on = [aws_api_gateway_integration.lambda]
-
   rest_api_id = aws_api_gateway_rest_api.this.id
-  stage_name  = var.environment
+
+  triggers = {
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.this.body))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "this" {
+  deployment_id = aws_api_gateway_deployment.this.id
+  rest_api_id   = aws_api_gateway_rest_api.this.id
+  stage_name    = var.api_gateway_stage_name
 }
