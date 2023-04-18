@@ -55,11 +55,11 @@ def process_request(headers, body):
         if event.get("type") == "app_mention":
             message = event.get("text")
             channel = event.get("channel")
-            print(f"got a message: {message}")
+            logging.info(f"got a message: {message}")
             # per-channel chat contexts
             chat = Chat(channel)
             response = chat.send_message(message)
-            print(f"got a response: {response}")
+            logging.info(f"got a response: {response}")
             requests.post(
                 url="https://slack.com/api/chat.postMessage",
                 data={
