@@ -7,8 +7,8 @@ resource "aws_secretsmanager_secret_version" "this" {
   # these secrets need to be set manually after the stack is deployed
   secret_string = <<EOF
     {
-        "${local.openai_api_key_secret_name}": "${var.openai_api_key}"
-        "${local.slack_signing_key_secret_name}": "${var.slack_signing_key}"
+        "${local.openai_api_key_secret_name}": "${var.openai_api_key}",
+        "${local.slack_signing_key_secret_name}": "${var.slack_signing_key}",
         "${local.slack_bot_token_secret_name}": "${var.slack_bot_token}"
     }
   EOF 
