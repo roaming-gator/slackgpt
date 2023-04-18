@@ -1,14 +1,13 @@
-import subprocess
-import sys
-import time
-import hmac
-import hashlib
-import json
-import logging
-import requests
-from . import secrets, env
 from .chat import Chat
+from . import secrets, env
+import sys
 
+import requests
+import logging
+import json
+import hashlib
+import hmac
+import time
 
 # set default logging level to INFO and output to stdout
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
