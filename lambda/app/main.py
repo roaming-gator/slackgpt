@@ -70,4 +70,4 @@ def lambda_handler(event, context):
                 },
             )
 
-    return {"statusCode": 200, "body": json.dumps("Event type unrecognized")}
+    return {"statusCode": 200, "body": "Event type unrecognized"}
