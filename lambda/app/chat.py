@@ -29,6 +29,7 @@ class Chat:
             },
         )
 
+    # send a message to chatgpt, with previous chat history, and wait for a response
     def send_message(self, content):
         messages = self.messages
         messages.append({"role": "system", "content": content})

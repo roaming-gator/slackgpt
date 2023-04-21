@@ -5,6 +5,7 @@ from aws_xray_sdk.core import patch_all
 patch_all()
 
 
+# this lambda function consumes slack events that come in through api gateway
 def event_consumer(event, context):
     logging.info(f"Received event:\n{event}\nWith context:\n{context}")
     headers = event["headers"]
@@ -23,6 +24,7 @@ def event_consumer(event, context):
     }
 
 
+# this lambda function processes jobs from the worker queue
 def job_worker(event, context):
     logging.info(f"Received event:\n{event}\nWith context:\n{context}")
     result = slack.process_payload_sync(event)

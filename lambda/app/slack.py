@@ -62,6 +62,7 @@ def process_payload(body):
     return PayloadProcessingResult(404, "Unrecognized request type")
 
 
+# siphoned-off synchronous processing of messages
 def process_payload_sync(event):
     message = event.get("text")
     channel = event.get("channel")
