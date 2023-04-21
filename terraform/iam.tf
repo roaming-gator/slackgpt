@@ -30,6 +30,7 @@ data "aws_iam_policy_document" "lambda_policy_document" {
     resources = ["arn:aws:logs:*:*:*"]
   }
 
+  # enable access to the dynamodb table
   statement {
     actions = [
       "dynamodb:GetItem",
@@ -38,10 +39,19 @@ data "aws_iam_policy_document" "lambda_policy_document" {
     resources = [aws_dynamodb_table.this.arn]
   }
 
+  # allow reading the secrets
   statement {
     actions = [
       "secretsmanager:GetSecretValue"
     ]
     resources = [aws_secretsmanager_secret.this.arn]
+  }
+
+  # allow pushing to the queue
+  statement {
+    actions = [
+      "sqs:SendMessage"
+    ]
+    resources = [aws_sqs_queue.this.arn]
   }
 }
