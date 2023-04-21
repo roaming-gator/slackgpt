@@ -47,11 +47,12 @@ data "aws_iam_policy_document" "lambda_policy_document" {
     resources = [aws_secretsmanager_secret.this.arn]
   }
 
-  # allow pushing to the queue
+  # allow interacting with the queue
   statement {
     actions = [
       "sqs:SendMessage",
-      "sqs:ReceiveMessage"
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage"
     ]
     resources = [aws_sqs_queue.this.arn]
   }
