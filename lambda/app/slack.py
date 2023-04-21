@@ -4,11 +4,14 @@ import time
 import logging
 import json
 import requests
-from . import secrets
+import boto3
+from . import secrets, env
 from .chat import Chat
 
+sqs = boto3.client('sqs')
 
-class RequestResult():
+
+class PayloadProcessingResult():
     def __init__(self, status_code, message):
         self.status_code = status_code
         self.message = message
@@ -39,35 +42,40 @@ def validate_request(headers, body):
     return True
 
 
-def process_request(headers, body):
-    if not validate_request(headers, body):
-        logging.warn("Validation failed")
-        return RequestResult(403, "Validation failed")
+def process_payload(body):
     body_obj = json.loads(body)
     request_type = body_obj.get("type")
     if request_type == "url_verification":
         logging.info("Url verification requested")
         # slack wants to validate this app
         challenge_answer = body_obj.get("challenge")
-        return RequestResult(200, challenge_answer)
+        return PayloadProcessingResult(200, challenge_answer)
     elif request_type == "event_callback":
         event = body_obj.get("event", {})
         if event.get("type") == "app_mention":
-            message = event.get("text")
-            channel = event.get("channel")
-            logging.info(f"got a message: {message}")
-            # per-channel chat contexts
-            chat = Chat(channel)
-            response = chat.send_message(message)
-            logging.info(f"got a response: {response}")
-            requests.post(
-                url="https://slack.com/api/chat.postMessage",
-                data={
-                    "token": secrets.slack_bot_token,
-                    "channel": channel,
-                    "text": response,
-                },
+            logging.info("Got an app mention. Sending to sqs for processing")
+            sqs.send_message(
+                QueueUrl=env.sqs_queue_url,
+                MessageBody=event
             )
-            return RequestResult(200, "Message sent")
+            return PayloadProcessingResult(200, "Message queued for processing")
+    return PayloadProcessingResult(404, "Unrecognized request type")
 
-    return RequestResult(404, "Unrecognized request type")
+
+def process_payload_sync(event):
+    message = event.get("text")
+    channel = event.get("channel")
+    logging.info(f"got a message: {message}")
+    # per-channel chat contexts
+    chat = Chat(channel)
+    response = chat.send_message(message)
+    logging.info(f"got a response: {response}")
+    requests.post(
+        url="https://slack.com/api/chat.postMessage",
+        data={
+            "token": secrets.slack_bot_token,
+            "channel": channel,
+            "text": response,
+        },
+    )
+    return PayloadProcessingResult(200, "Message sent")

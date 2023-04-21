@@ -33,9 +33,14 @@ variable "slack_bot_display_name" {
   default     = "slackgpt"
 }
 
-variable "lambda_function_name" {
-  description = "Name of the lambda function that runs our app"
-  default     = "slackgpt"
+variable "event_consumer_lambda_function_name" {
+  description = "Name of the lambda function that receives slack events and sends them to the background"
+  default     = "slackgpt-event-consumer"
+}
+
+variable "job_worker_lambda_function_name" {
+  description = "Name of the lambda function that processes the jobs and sends the response back to slack"
+  default     = "slackgpt-job-worker"
 }
 
 variable "lambda_execution_role_name" {
@@ -65,5 +70,10 @@ variable "api_gateway_stage_name" {
 
 variable "api_gateway_resource_path" {
   description = "Last part of the api gateway endpoint path"
+  default     = "slackgpt"
+}
+
+variable "sqs_queue_name" {
+  description = "Name of the sqs queue for sending the processing job to the background"
   default     = "slackgpt"
 }
