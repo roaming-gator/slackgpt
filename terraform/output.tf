@@ -25,7 +25,3 @@ output "slack_app_manifest" {
       token_rotation_enabled: false
     EOF
 }
-
-output "api_rest_api" {
-  value = aws_api_gateway_rest_api.this.body
-}
