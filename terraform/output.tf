@@ -14,6 +14,7 @@ output "slack_app_manifest" {
       scopes:
         bot:
           - app_mentions:read
+          - chat:write
     settings:
       event_subscriptions:
         request_url: "${aws_api_gateway_stage.this.invoke_url}/${var.api_gateway_resource_path}"
@@ -23,4 +24,8 @@ output "slack_app_manifest" {
       socket_mode_enabled: false
       token_rotation_enabled: false
     EOF
+}
+
+output "api_rest_api" {
+  value = aws_api_gateway_rest_api.this.body
 }
