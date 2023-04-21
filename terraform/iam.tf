@@ -50,7 +50,8 @@ data "aws_iam_policy_document" "lambda_policy_document" {
   # allow pushing to the queue
   statement {
     actions = [
-      "sqs:SendMessage"
+      "sqs:SendMessage",
+      "sqs:ReceiveMessage"
     ]
     resources = [aws_sqs_queue.this.arn]
   }
