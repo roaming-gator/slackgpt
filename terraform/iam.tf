@@ -52,7 +52,8 @@ data "aws_iam_policy_document" "lambda_policy_document" {
     actions = [
       "sqs:SendMessage",
       "sqs:ReceiveMessage",
-      "sqs:DeleteMessage"
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
     ]
     resources = [aws_sqs_queue.this.arn]
   }
