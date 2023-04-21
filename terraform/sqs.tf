@@ -2,5 +2,6 @@
 # a response to slack immediately
 
 resource "aws_sqs_queue" "this" {
-  name = var.sqs_queue_name
+  name_prefix                = var.sqs_queue_name
+  visibility_timeout_seconds = var.execution_timeout
 }
