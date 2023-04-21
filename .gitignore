@@ -2,7 +2,7 @@
 .vscode
 .env
 package.zip
-.terraform.lock
+.terraform.lock.hcl
 # Local .terraform directories
 **/.terraform/*
 
