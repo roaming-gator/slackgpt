@@ -32,11 +32,11 @@ resource "aws_api_gateway_deployment" "this" {
 
   triggers = {
     # trigger redeployment whenever the relevant terraform files changes
-    redeployment = sha1([
+    redeployment = sha1(join("-", [
       filesha1("${path.module}/lambda.tf"),
       filesha1("${path.module}/apigw.tf"),
       filesha1("${path.module}/variables.tf"),
-    ])
+    ]))
   }
 
   lifecycle {
