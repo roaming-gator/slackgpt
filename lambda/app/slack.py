@@ -63,6 +63,16 @@ def process_payload(body):
     return PayloadProcessingResult(404, "Unrecognized request type")
 
 
+def find_message_text(blocks):
+    for block in blocks:
+        if block.get("type") == "text":
+            return block.get("text").strip()
+        elif elements := block.get("elements")
+            return find_message_text(elements)
+    # couldnt find any text in these blocks
+    return None
+
+
 # siphoned-off synchronous processing of messages
 def process_payload_sync(queue_event):
     logging.info(f"Received a message from the queue: {queue_event}")
@@ -71,24 +81,19 @@ def process_payload_sync(queue_event):
         body = json.loads(record['body'])
         channel = body.get("channel")
         blocks = body.get("blocks")
-        for block in blocks:
-            if block.get("type") == "rich_text":
-                elements = block.get("elements")
-                for element in elements:
-                    if element.get("type") == "rich_text_section":
-                        text = element.get("text")
-                        logging.info(f"got a message: {text}")
-                        # per-channel chat contexts
-                        chat = Chat(channel)
-                        response = chat.send_message(text)
-                        logging.info(f"got a response: {response}")
-                        requests.post(
-                            url="https://slack.com/api/chat.postMessage",
-                            data={
-                                "token": secrets.slack_bot_token,
-                                "channel": channel,
-                                "text": response,
-                            },
-                        )
-                        return PayloadProcessingResult(200, "Message sent")
+        text = find_message_text(blocks)
+        logging.info(f"got a message: {text}")
+        # per-channel chat contexts
+        chat = Chat(channel)
+        response = chat.send_message(text)
+        logging.info(f"got a response: {response}")
+        requests.post(
+            url="https://slack.com/api/chat.postMessage",
+            data={
+                "token": secrets.slack_bot_token,
+                "channel": channel,
+                "text": response,
+            },
+        )
+        return PayloadProcessingResult(200, "Message sent")
     return PayloadProcessingResult(500, "Could not process events")
