@@ -31,12 +31,12 @@ resource "aws_api_gateway_deployment" "this" {
   rest_api_id = aws_api_gateway_rest_api.this.id
 
   triggers = {
-    # Note: when things around here change, we might need to manually redeploy the API Gateway in the console
-    redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.proxy.id,
-      aws_api_gateway_method.proxy.id,
-      aws_api_gateway_integration.lambda.id,
-    ]))
+    # trigger redeployment whenever the relevant terraform files changes
+    redeployment = sha1([
+      filesha1("${path.module}/lambda.tf"),
+      filesha1("${path.module}/apigw.tf"),
+      filesha1("${path.module}/variables.tf"),
+    ])
   }
 
   lifecycle {
