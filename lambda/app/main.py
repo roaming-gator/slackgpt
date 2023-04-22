@@ -14,10 +14,18 @@ def event_consumer(event, context):
     if slack.validate_request(headers, body):
         logging.info("Validation succeeded")
         result = slack.process_payload(body)
+        logging.info("Sending %s" % ({
+            "statusCode": result.status_code,
+            "body": result.message
+        }))
         return {
             "statusCode": result.status_code,
             "body": result.message
         }
+    logging.info("Sending %s" % ({
+        "statusCode": 403,
+        "body": "You are not authorized to access this resource"
+    }))
     return {
         "statusCode": 403,
         "body": "You are not authorized to access this resource"
