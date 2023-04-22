@@ -64,21 +64,31 @@ def process_payload(body):
 
 
 # siphoned-off synchronous processing of messages
-def process_payload_sync(event):
-    logging.info(f"Received a message from the queue: {event}")
-    message = event.get("text")
-    channel = event.get("channel")
-    logging.info(f"got a message: {message}")
-    # per-channel chat contexts
-    chat = Chat(channel)
-    response = chat.send_message(message)
-    logging.info(f"got a response: {response}")
-    requests.post(
-        url="https://slack.com/api/chat.postMessage",
-        data={
-            "token": secrets.slack_bot_token,
-            "channel": channel,
-            "text": response,
-        },
-    )
-    return PayloadProcessingResult(200, "Message sent")
+def process_payload_sync(queue_event):
+    logging.info(f"Received a message from the queue: {queue_event}")
+    for record in queue_event['Records']:
+        logging.info(f"Processing record: {record}")
+        body = json.loads(record['body'])
+        channel = body.get("channel")
+        blocks = body.get("blocks")
+        for block in blocks:
+            if block.get("type") == "rich_text":
+                elements = block.get("elements")
+                for element in elements:
+                    if element.get("type") == "rich_text_section":
+                        text = element.get("text")
+                        logging.info(f"got a message: {text}")
+                        # per-channel chat contexts
+                        chat = Chat(channel)
+                        response = chat.send_message(text)
+                        logging.info(f"got a response: {response}")
+                        requests.post(
+                            url="https://slack.com/api/chat.postMessage",
+                            data={
+                                "token": secrets.slack_bot_token,
+                                "channel": channel,
+                                "text": response,
+                            },
+                        )
+                        return PayloadProcessingResult(200, "Message sent")
+    return PayloadProcessingResult(500, "Could not process events")
