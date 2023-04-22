@@ -54,9 +54,10 @@ def process_payload(body):
         event = body_obj.get("event", {})
         if event.get("type") == "app_mention":
             logging.info("Got an app mention. Sending to sqs for processing")
+            queue_message = json.dumps(event)
             sqs.send_message(
                 QueueUrl=env.sqs_queue_url,
-                MessageBody=event
+                MessageBody=queue_message
             )
             return PayloadProcessingResult(200, "Message queued for processing")
     return PayloadProcessingResult(404, "Unrecognized request type")
@@ -64,6 +65,7 @@ def process_payload(body):
 
 # siphoned-off synchronous processing of messages
 def process_payload_sync(event):
+    logging.info(f"Received a message from the queue: {event}")
     message = event.get("text")
     channel = event.get("channel")
     logging.info(f"got a message: {message}")
