@@ -67,8 +67,8 @@ def find_message_text(blocks):
     for block in blocks:
         if block.get("type") == "text":
             return block.get("text").strip()
-        elif elements := block.get("elements")
-            return find_message_text(elements)
+        elif "elements" in block:
+            return find_message_text(block["elements"])
     # couldnt find any text in these blocks
     return None
 
