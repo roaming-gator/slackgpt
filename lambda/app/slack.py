@@ -5,6 +5,7 @@ import logging
 import json
 import requests
 import boto3
+import re
 from . import secrets, env
 from .chat import Chat
 
@@ -63,16 +64,6 @@ def process_payload(body):
     return PayloadProcessingResult(404, "Unrecognized request type")
 
 
-def find_message_text(blocks):
-    for block in blocks:
-        if block.get("type") == "text":
-            return block.get("text").strip()
-        elif "elements" in block:
-            return find_message_text(block["elements"])
-    # couldnt find any text in these blocks
-    return None
-
-
 # siphoned-off synchronous processing of messages
 def process_payload_sync(queue_event):
     logging.info(f"Received a message from the queue: {queue_event}")
@@ -80,12 +71,13 @@ def process_payload_sync(queue_event):
         logging.info(f"Processing record: {record}")
         body = json.loads(record['body'])
         channel = body.get("channel")
-        blocks = body.get("blocks")
-        text = find_message_text(blocks)
-        logging.info(f"got a message: {text}")
+        original_text = body.get("text")
+        query = re.sub("<@.*>", "", original_text).strip()
+        logging.debug(f"Original query was: {original_text}")
+        logging.info(f'User query is: {query}')
         # per-channel chat contexts
         chat = Chat(channel)
-        response = chat.send_message(text)
+        response = chat.send_message(query)
         logging.info(f"got a response: {response}")
         requests.post(
             url="https://slack.com/api/chat.postMessage",
