@@ -3,7 +3,7 @@ resource "null_resource" "python_scripts_setup" {
   triggers = {
     hash_of_hashes = sha1(jsonencode({
       for f in fileset("${path.module}/../lambda/", "**") :
-      f => filesha1(f)
+      f => filesha1("${path.module}/../lambda/${f}")
     }))
   }
   provisioner "local-exec" {
