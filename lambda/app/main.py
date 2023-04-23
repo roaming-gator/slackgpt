@@ -1,6 +1,9 @@
 from . import slack
 import logging
 from aws_xray_sdk.core import patch_all
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 patch_all()
 

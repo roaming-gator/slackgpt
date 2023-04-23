@@ -59,10 +59,3 @@ resource "aws_lambda_permission" "apigw" {
 
   source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*/*"
 }
-
-data "archive_file" "python_lambda_package" {
-  type = "zip"
-  # package the app directory
-  source_dir  = "${path.module}/../lambda/"
-  output_path = "package.zip"
-}
