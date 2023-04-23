@@ -1,4 +1,11 @@
 resource "null_resource" "python_scripts_setup" {
+  # trigger whenever any file changes in the lambda directory
+  triggers = {
+    hash_of_hashes = sha1(jsonencode({
+      for f in fileset("${path.module}/../lambda/", "**") :
+      f => filesha1(f)
+    }))
+  }
   provisioner "local-exec" {
     command     = <<EOT
       set -e
