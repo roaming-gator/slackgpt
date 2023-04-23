@@ -19,7 +19,6 @@ resource "null_resource" "python_scripts_setup" {
       set -e
       FOLDER_PATH="${path.module}/../lambda/"
       TEMP_DIR="${local.python_package_dir}"
-      mkdir -p "$TEMP_DIR"
       echo "Temporary directory created: $TEMP_DIR"
       
       # Copy Python scripts to the temporary directory
@@ -41,7 +40,8 @@ resource "null_resource" "python_scripts_setup" {
 
 data "archive_file" "python_lambda_package" {
   depends_on = [
-    null_resource.python_scripts_setup
+    null_resource.python_scripts_setup,
+    local_file.kick
   ]
   type = "zip"
   # package the app directory
