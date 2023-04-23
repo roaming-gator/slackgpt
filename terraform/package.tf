@@ -1,4 +1,12 @@
+resource "local_file" "kick" {
+  content  = "kick"
+  filename = "${local.python_package_dir}/.kick"
+}
+
 resource "null_resource" "python_scripts_setup" {
+  depends_on = [
+    local_file.kick
+  ]
   # trigger whenever any file changes in the lambda directory
   triggers = {
     hash_of_hashes = sha1(jsonencode({
