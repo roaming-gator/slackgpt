@@ -5,4 +5,6 @@ locals {
   slack_signing_key_secret_name = "slack_signing_key"
   # Slack bot token secret name in AWS secret manager
   slack_bot_token_secret_name = "slack_bot_token"
+  # temporary python package directory
+  python_package_dir = "${path.module}/.terraform/tmp/package"
 }
