@@ -1,12 +1,8 @@
 resource "null_resource" "python_scripts_setup" {
-  triggers = {
-    folder_path = "${path.module}/../lambda/"
-  }
-
   provisioner "local-exec" {
     command     = <<EOT
       set -e
-      FOLDER_PATH="${triggers.folder_path}"
+      FOLDER_PATH="${path.module}/../lambda/"
       TEMP_DIR=$(mktemp -d)
       echo "Temporary directory created: $TEMP_DIR"
       
