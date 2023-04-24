@@ -1,5 +1,5 @@
 resource "local_file" "kick" {
-  content  = "kick"
+  content  = local.package_source_hash
   filename = "${local.python_package_dir}/.kick"
 }
 
@@ -9,10 +9,7 @@ resource "null_resource" "python_scripts_setup" {
   ]
   # trigger whenever any file changes in the lambda directory
   triggers = {
-    hash_of_hashes = sha1(jsonencode({
-      for f in fileset("${path.module}/../lambda/", "**") :
-      f => filesha1("${path.module}/../lambda/${f}")
-    }))
+    redeployment = local.package_source_hash
   }
   provisioner "local-exec" {
     command     = <<EOT
@@ -43,8 +40,13 @@ data "archive_file" "python_lambda_package" {
     null_resource.python_scripts_setup,
     local_file.kick
   ]
+  excludes = [
+    "__pycache__",
+    "core/__pycache__",
+    "tests"
+  ]
   type = "zip"
   # package the app directory
   source_dir  = local.python_package_dir
-  output_path = "package.zip"
+  output_path = local.package_file_name
 }

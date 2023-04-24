@@ -12,7 +12,7 @@ locals {
 
 resource "aws_lambda_function" "event_consumer" {
   function_name    = var.event_consumer_lambda_function_name
-  filename         = "package.zip"
+  filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "python3.9"
@@ -29,7 +29,7 @@ resource "aws_lambda_function" "event_consumer" {
 
 resource "aws_lambda_function" "job_worker" {
   function_name    = var.job_worker_lambda_function_name
-  filename         = "package.zip"
+  filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "python3.9"
