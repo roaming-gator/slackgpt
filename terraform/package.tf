@@ -1,17 +1,17 @@
 resource "local_file" "kick" {
+  # ensure the dynamically-generated temporary directory exists
   content  = local.package_source_hash
   filename = "${local.python_package_dir}/.kick"
 }
 
 resource "null_resource" "python_scripts_setup" {
+  # install dependencies in a temp directory
   depends_on = [
     local_file.kick
   ]
+  # trigger whenever any file changes in the lambda directory
   triggers = {
-    # always trigger the dependency installation on each run.
-    # this is needed as a workaround for lack of file persistence on terraform cloud.
-    # todo: figure out a way to only do this when the source code changes
-    redeployment = timestamp()
+    redeployment = local.package_source_hash
   }
   provisioner "local-exec" {
     command     = <<EOT
@@ -22,7 +22,7 @@ resource "null_resource" "python_scripts_setup" {
       echo "Temporary directory created: $TEMP_DIR"
       
       # Copy Python scripts to the temporary directory
-      cp -R "$FOLDER_PATH/*" "$TEMP_DIR/"
+      cp -R $FOLDER_PATH/* $TEMP_DIR/
       echo "Python scripts copied to $TEMP_DIR"
 
       # Check if 'requirements.txt' exists in the folder
