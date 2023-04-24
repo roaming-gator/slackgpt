@@ -9,8 +9,6 @@ import re
 from . import secrets, env
 from .chat import Chat
 
-sqs = boto3.client('sqs')
-
 
 class PayloadProcessingResult():
     def __init__(self, status_code, message):
@@ -56,6 +54,7 @@ def process_payload(body):
         if event.get("type") == "app_mention":
             logging.info("Got an app mention. Sending to sqs for processing")
             queue_message = json.dumps(event)
+            sqs = boto3.client('sqs')
             sqs.send_message(
                 QueueUrl=env.sqs_queue_url,
                 MessageBody=queue_message

@@ -5,6 +5,7 @@ import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
+# instrument the code using aws xray for tracing
 patch_all()
 
 
