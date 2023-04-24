@@ -37,8 +37,7 @@ resource "null_resource" "python_scripts_setup" {
 
 data "archive_file" "python_lambda_package" {
   depends_on = [
-    null_resource.python_scripts_setup,
-    local_file.kick
+    null_resource.python_scripts_setup
   ]
   excludes = [
     "__pycache__",
