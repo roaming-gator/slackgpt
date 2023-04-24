@@ -8,9 +8,9 @@ resource "null_resource" "python_scripts_setup" {
     local_file.kick
   ]
   # trigger whenever any file changes in the lambda directory
-  triggers = [
-    local.package_source_hash
-  ]
+  triggers = {
+    redeployment = local.package_source_hash
+  }
   provisioner "local-exec" {
     command     = <<EOT
       set -e
