@@ -1,5 +1,5 @@
 resource "local_file" "kick" {
-  content  = "kick"
+  content  = timestamp()
   filename = "${local.python_package_dir}/.kick"
 }
 
@@ -7,12 +7,10 @@ resource "null_resource" "python_scripts_setup" {
   depends_on = [
     local_file.kick
   ]
-  # trigger whenever any file changes in the lambda directory
+  # currently always repackage and deploy
+  # todo: figure out better trigger logic
   triggers = {
-    hash_of_hashes = sha1(jsonencode({
-      for f in fileset("${path.module}/../lambda/", "**") :
-      f => filesha1("${path.module}/../lambda/${f}")
-    }))
+    kick = local_file.kick.content
   }
   provisioner "local-exec" {
     command     = <<EOT
