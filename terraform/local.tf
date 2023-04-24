@@ -7,4 +7,11 @@ locals {
   slack_bot_token_secret_name = "slack_bot_token"
   # temporary python package directory
   python_package_dir = "${path.module}/.terraform/tmp/package"
+  # lambda package filename dependent on source code hash
+  package_source_hash = sha1(jsonencode({
+    for f in fileset("${path.module}/../lambda/", "**") :
+    f => filesha1("${path.module}/../lambda/${f}")
+  }))
+  # lambda package filename
+  package_file_name = "${local.package_source_hash}.zip"
 }

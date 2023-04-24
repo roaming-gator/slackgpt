@@ -1,5 +1,5 @@
 resource "local_file" "kick" {
-  content  = timestamp()
+  content  = local.package_source_hash
   filename = "${local.python_package_dir}/.kick"
 }
 
@@ -7,11 +7,10 @@ resource "null_resource" "python_scripts_setup" {
   depends_on = [
     local_file.kick
   ]
-  # currently always repackage and deploy
-  # todo: figure out better trigger logic
-  triggers = {
-    kick = local_file.kick.content
-  }
+  # trigger whenever any file changes in the lambda directory
+  triggers = [
+    local.package_source_hash
+  ]
   provisioner "local-exec" {
     command     = <<EOT
       set -e
@@ -41,8 +40,13 @@ data "archive_file" "python_lambda_package" {
     null_resource.python_scripts_setup,
     local_file.kick
   ]
+  excludes = [
+    "__pycache__",
+    "core/__pycache__",
+    "tests"
+  ]
   type = "zip"
   # package the app directory
   source_dir  = local.python_package_dir
-  output_path = "package.zip"
+  output_path = local.package_file_name
 }
