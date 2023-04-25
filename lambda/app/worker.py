@@ -20,7 +20,7 @@ class QueueItem:
         return json.dumps(dataclasses.asdict(self))
 
 
-@ dataclasses.dataclass
+@dataclasses.dataclass
 class PayloadProcessingResult:
     status_code: int
     message: str
