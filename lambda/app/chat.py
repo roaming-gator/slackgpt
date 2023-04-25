@@ -2,6 +2,7 @@ import boto3
 import openai
 import tiktoken
 import logging
+from time import sleep
 from . import env, secrets
 
 # set the api key
@@ -97,9 +98,20 @@ class Chat:
     def send_message(self, content):
         user_message = {"role": "system", "content": content}
         self.prune_messages(user_message)
-        chat = openai.ChatCompletion.create(
-            model=self.model,
-            messages=self.messages + [user_message])
+        for retry in range(3):
+            try:
+                chat = openai.ChatCompletion.create(
+                    model=self.model,
+                    messages=self.messages + [user_message])
+            except openai.error.InvalidRequestError as e:
+                if "reduce the length of the messages" in e.message:
+                    # chat is too long and the prune_messages() function failed to prune enough messages
+                    self.pop_message()
+                    sleep(1)
+                    continue
+                else:
+                    raise e
+            break
         response = chat["choices"][0]["message"]["content"]
         response_message = {"role": "assistant", "content": response}
         new_messages = [user_message, response_message]
