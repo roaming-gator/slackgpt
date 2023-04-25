@@ -15,4 +15,6 @@ locals {
   # lambda package filename includes the source hash to manually ensure the 
   # archive gets regenerated when the source changes
   package_file_name = "${local.package_source_hash}.zip"
+  # runtime for aws lambda
+  lambda_runtime_version = "3.9"
 }
