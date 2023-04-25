@@ -1,5 +1,6 @@
 from slack_bolt import App
 from slack_bolt.adapter.aws_lambda import SlackRequestHandler
+import logging
 from . import secrets, worker
 
 
@@ -11,17 +12,17 @@ lambda_request_handler = SlackRequestHandler(app=app)
 
 
 @app.middleware
-def log_request(logger, body, next):
-    logger.debug(body)
+def log_request(_, body, next):
+    logging.debug(body)
     return next()
 
 
 @app.event("app_mention")
-def handle_app_mention(body, say, logger):
-    logger.info(f"Received an app mention: {body}")
+def handle_app_mention(body, say, _):
+    logging.info(f"Received an app mention: {body}")
     channel = body["event"]["channel"]
     text = body["event"]["text"]
-    logger.info(f'User query is: {text}')
+    logging.info(f'User query is: {text}')
     queue_item = worker.QueueItem(channel, text)
     worker.push_queue(queue_item)
 
