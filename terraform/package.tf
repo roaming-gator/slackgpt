@@ -9,15 +9,11 @@ resource "null_resource" "python_scripts_setup" {
   depends_on = [
     local_file.kick
   ]
+  # trigger every apply as a workaround for terraform cloud not allowing persistent file storage on
+  # the local_file kick resource.
+  # todo: figure out how to only do dependency installation and repackaging when the source changes
   triggers = {
-    redeployment = local.package_source_hash
-  }
-  lifecycle {
-    replace_triggered_by = [
-      # repackage these files whenever the local_file creates the temporary working directory.
-      # this is a workaround for terraform cloud not allowing persistent file storage on the local_file kick resource.
-      local_file.kick.id
-    ]
+    redeployment = timestamp()
   }
   provisioner "local-exec" {
     command     = <<EOT
