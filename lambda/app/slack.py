@@ -1,44 +1,47 @@
-import hmac
-import hashlib
-import time
 import logging
 import json
 import requests
 import boto3
 import re
+import dataclasses
+from slack_bolt import App
+from slack_bolt.adapter.aws_lambda import SlackRequestHandler
 from . import secrets, env
 from .chat import Chat
+
+
+@dataclasses.dataclass
+class SlackEvent:
+    channel: str
+    text: str
+
+
+@dataclasses.dataclass
+class PayloadProcessingResult():
+    status_code: int
+    message: str
+
+
+# https://github.com/slackapi/bolt-python/blob/main/examples/aws_lambda/lazy_aws_lambda.py
+app = App(token=secrets.slack_bot_token,
+          signing_secret=secrets.slack_signing_key,
+          process_before_response=True)
+
+
+@app.middleware  # or app.use(log_request)
+def log_request(logger, body, next):
+    logger.debug(body)
+    return next()
+
+
+@app.event("app_mention")
+def handle_app_mention(body, say, logger):
 
 
 class PayloadProcessingResult():
     def __init__(self, status_code, message):
         self.status_code = status_code
         self.message = message
-
-
-def validate_request(headers, body):
-    # make sure it's slack that's sending us the request
-    # https://api.slack.com/authentication/verifying-requests-from-slack
-    timestamp = int(headers.get("X-Slack-Request-Timestamp"))
-    provided_signature = headers.get("X-Slack-Signature")
-    if abs(time.time() - timestamp) > 60 * 5:
-        # The request timestamp is more than five minutes from local time.
-        # It could be a replay attack, so let's ignore it.
-        return False
-    sig_basestring = f"v0:{timestamp}:{body}"
-    slack_signing_key = secrets.slack_signing_key
-    h = hmac.new(
-        bytes(slack_signing_key, "latin-1"),
-        msg=bytes(sig_basestring, "latin-1"),
-        digestmod=hashlib.sha256,
-    )
-    calculated_signature = "v0=" + h.hexdigest()
-    logging.debug(
-        f"calculated = {calculated_signature}, passed = {provided_signature}")
-    if calculated_signature != provided_signature:
-        logging.warn("Signatures dont match")
-        return False
-    return True
 
 
 def process_payload(body):
