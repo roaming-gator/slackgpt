@@ -12,12 +12,6 @@ app = App(token=secrets.slack_bot_token,
 lambda_request_handler = SlackRequestHandler(app=app)
 
 
-@app.middleware
-def log_request(logger, body, next):
-    logging.debug(body)
-    return next()
-
-
 @app.event("app_mention")
 def handle_app_mention(body, say, logger):
     logging.info(f"Received an app mention: {body}")
