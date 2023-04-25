@@ -7,7 +7,7 @@ locals {
     SLACK_BOT_TOKEN_SECRET_NAME   = local.slack_bot_token_secret_name
     OPENAI_DEFAULT_CHAT_MODEL     = var.openai_default_chat_model
     SQS_QUEUE_URL                 = aws_sqs_queue.this.id
-    OPENAI_MODEL_MAX_TOKENS       = var.openai_model_max_tokens
+    CHAT_HISTORY_MAX_TOKENS       = var.chat_history_max_tokens
   }
 }
 

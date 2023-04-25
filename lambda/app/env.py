@@ -7,4 +7,4 @@ slack_signing_key_secret_name = os.environ['SLACK_SIGNING_KEY_SECRET_NAME']
 slack_bot_token_secret_name = os.environ['SLACK_BOT_TOKEN_SECRET_NAME']
 openai_default_chat_model = os.environ['OPENAI_DEFAULT_CHAT_MODEL']
 sqs_queue_url = os.environ['SQS_QUEUE_URL']
-openai_model_max_tokens = int(os.environ['OPENAI_MODEL_MAX_TOKENS'])
+chat_history_max_tokens = int(os.environ['CHAT_HISTORY_MAX_TOKENS'])
