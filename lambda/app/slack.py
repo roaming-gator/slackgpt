@@ -1,7 +1,6 @@
 from slack_bolt import App
 from slack_bolt.adapter.aws_lambda import SlackRequestHandler
-from .worker import push_queue as push_worker_queue, QueueItem
-from . import secrets
+from . import secrets, worker
 
 
 # https://github.com/slackapi/bolt-python/blob/main/examples/aws_lambda/lazy_aws_lambda.py
@@ -23,8 +22,8 @@ def handle_app_mention(body, say, logger):
     channel = body["event"]["channel"]
     text = body["event"]["text"]
     logger.info(f'User query is: {text}')
-    queue_item = QueueItem(channel, text)
-    push_worker_queue(queue_item)
+    queue_item = worker.QueueItem(channel, text)
+    worker.push_queue(queue_item)
 
 
 def post_message(channel, response):

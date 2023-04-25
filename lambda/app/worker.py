@@ -2,9 +2,8 @@ import logging
 import json
 import boto3
 import dataclasses
-from . import env
+from . import env, slack
 from .chat import Chat
-from .slack import post_message as post_slack_message
 
 
 @dataclasses.dataclass
@@ -51,7 +50,7 @@ def process_records(records):
             chat = Chat(channel)
             response = chat.send_message(query)
             logging.info(f"got a response: {response}")
-            post_slack_message(channel, response)
+            slack.post_message(channel, response)
         return PayloadProcessingResult(200, "Message sent")
     except Exception as e:
         logging.error(f"Error processing payload: {e}")
