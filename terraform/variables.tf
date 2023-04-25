@@ -10,7 +10,12 @@ variable "secret_mgr_path" {
 
 variable "openai_default_chat_model" {
   description = "Default chat model to use"
-  default     = "gpt-3.5-turbo"
+  default     = "gpt-3.5-turbo-0301"
+}
+
+variable "openai_model_max_tokens" {
+  description = "Max allowed tokens for the specified openai model (see https://platform.openai.com/docs/models)."
+  default     = 4096
 }
 
 variable "openai_api_key" {
