@@ -101,6 +101,7 @@ The following table lists the configurable variables in the `variables.tf` file:
 | event_consumer_lambda_function_name | Name of the lambda function that receives slack events and sends them to the background          | "slackgpt-event-consumer" | No        |
 | job_worker_lambda_function_name     | Name of the lambda function that processes the jobs and sends the response back to slack         | "slackgpt-job-worker"     | No        |
 | lambda_execution_role_name          | Name of the iam role that gets created for the lambda function                                   | "slackgpt-lambda-role"    | No        |
+| lambda_memory_size                  | Amount of memory in MB that the lambda function can use at runtime                               | 512                       | No        |
 | execution_timeout                   | Max amount of seconds that the lambda function can run before its terminated                     | 60                        | No        |
 | api_gateway_name                    | Name of the api gateway                                                                          | "SlackGPT"                | No        |
 | aws_region                          | AWS region to deploy resources                                                                   | "us-east-1"               | No        |

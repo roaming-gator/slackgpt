@@ -53,6 +53,11 @@ variable "lambda_execution_role_name" {
   default     = "slackgpt-lambda-role"
 }
 
+variable "lambda_memory_size" {
+  description = "Amount of memory in MB that the lambda function can use at runtime"
+  default     = 512
+}
+
 variable "execution_timeout" {
   description = "Max amount of seconds that the lambda function can run before its terminated"
   default     = 60

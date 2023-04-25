@@ -18,7 +18,8 @@ resource "aws_lambda_function" "event_consumer" {
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.event_consumer"
-  timeout          = 60
+  timeout          = var.execution_timeout
+  memory_size      = var.lambda_memory_size
   depends_on = [
     data.archive_file.python_lambda_package
   ]
@@ -35,7 +36,8 @@ resource "aws_lambda_function" "job_worker" {
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.job_worker"
-  timeout          = 60
+  timeout          = var.execution_timeout
+  memory_size      = var.lambda_memory_size
   depends_on = [
     data.archive_file.python_lambda_package
   ]
