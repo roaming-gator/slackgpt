@@ -30,7 +30,11 @@ resource "null_resource" "python_scripts_setup" {
       # Check if 'requirements.txt' exists in the folder
       if [ -f "$TEMP_DIR/requirements.txt" ]; then
         # Install package dependencies to the temporary directory
-        pip install -r "$TEMP_DIR/requirements.txt" --target "$TEMP_DIR" --only-binary=:all: --platform manylinux2014_x86_64
+        pip install -r "$TEMP_DIR/requirements.txt" \
+          --target "$TEMP_DIR" \
+          --only-binary=:all: \
+          --platform manylinux2014_x86_64 \
+          --python-version ${local.lambda_runtime_version}
         echo "Dependencies installed in $TEMP_DIR"
       else
         echo "No requirements.txt file found, skipping dependencies installation"

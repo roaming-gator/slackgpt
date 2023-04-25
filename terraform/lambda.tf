@@ -16,7 +16,7 @@ resource "aws_lambda_function" "event_consumer" {
   filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
-  runtime          = "python3.9"
+  runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.event_consumer"
   timeout          = 60
   depends_on = [
@@ -33,7 +33,7 @@ resource "aws_lambda_function" "job_worker" {
   filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
-  runtime          = "python3.9"
+  runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.job_worker"
   timeout          = 60
   depends_on = [
