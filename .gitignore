@@ -3,6 +3,7 @@
 .env
 package.zip
 .terraform.lock.hcl
+sandbox/
 # Local .terraform directories
 **/.terraform/*
 

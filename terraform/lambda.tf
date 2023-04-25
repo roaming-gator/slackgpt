@@ -7,6 +7,7 @@ locals {
     SLACK_BOT_TOKEN_SECRET_NAME   = local.slack_bot_token_secret_name
     OPENAI_DEFAULT_CHAT_MODEL     = var.openai_default_chat_model
     SQS_QUEUE_URL                 = aws_sqs_queue.this.id
+    OPENAI_MODEL_MAX_TOKENS       = var.openai_model_max_tokens
   }
 }
 
@@ -15,9 +16,10 @@ resource "aws_lambda_function" "event_consumer" {
   filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
-  runtime          = "python3.9"
+  runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.event_consumer"
-  timeout          = 60
+  timeout          = var.execution_timeout
+  memory_size      = var.lambda_memory_size
   depends_on = [
     data.archive_file.python_lambda_package
   ]
@@ -32,9 +34,10 @@ resource "aws_lambda_function" "job_worker" {
   filename         = local.package_file_name
   source_code_hash = data.archive_file.python_lambda_package.output_base64sha256
   role             = aws_iam_role.lambda_execution.arn
-  runtime          = "python3.9"
+  runtime          = "python${local.lambda_runtime_version}"
   handler          = "app.main.job_worker"
-  timeout          = 60
+  timeout          = var.execution_timeout
+  memory_size      = var.lambda_memory_size
   depends_on = [
     data.archive_file.python_lambda_package
   ]

@@ -10,7 +10,12 @@ variable "secret_mgr_path" {
 
 variable "openai_default_chat_model" {
   description = "Default chat model to use"
-  default     = "gpt-3.5-turbo"
+  default     = "gpt-3.5-turbo-0301"
+}
+
+variable "openai_model_max_tokens" {
+  description = "Max allowed tokens for the specified openai model (see https://platform.openai.com/docs/models)."
+  default     = 4096
 }
 
 variable "openai_api_key" {
@@ -46,6 +51,11 @@ variable "job_worker_lambda_function_name" {
 variable "lambda_execution_role_name" {
   description = "Name of the iam role that gets created for the lambda function"
   default     = "slackgpt-lambda-role"
+}
+
+variable "lambda_memory_size" {
+  description = "Amount of memory in MB that the lambda function can use at runtime"
+  default     = 512
 }
 
 variable "execution_timeout" {

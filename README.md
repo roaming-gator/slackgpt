@@ -66,7 +66,7 @@ To interact with the SlackGPT bot, simply mention it in a message within a Slack
 
 ## Technical Details
 
-### Architecture 
+### Architecture
 
 The SlackGPT application is designed to interact with users in Slack channels using ChatGPT. It is built using AWS Lambda and follows a serverless architecture, which ensures scalability and cost efficiency. The technical summary of how the application works is as follows:
 
@@ -76,7 +76,7 @@ The SlackGPT application is designed to interact with users in Slack channels us
 
 3. **Event Processing**: The second Lambda function receives items from the SQS queue and processes them. It uses a DynamoDB table to store previous interactions and ChatGPT responses, which helps maintain the state of the conversation.
 
-4. **State Management**: When a new request is received from the SQS queue, the Lambda function looks up the previous chat history from the DynamoDB table, appends the new message to the history, and sends it to ChatGPT for a response. Once the response is obtained, it is appended to the chat history, which is then updated in the DynamoDB table. The chat history state is preserved on a per-channel basis, with no expiration logic currently implemented.
+4. **State Management**: When a new request is received from the SQS queue, the Lambda function looks up the previous chat history from the DynamoDB table, appends the new message to the history, and sends it to ChatGPT for a response. Once the response is obtained, it is appended to the chat history, which is then updated in the DynamoDB table. The chat history state is preserved on a per-channel basis. To ensure that the total tokens stay under the maximum allowed by the ChatGPT model, the chat history is auto-pruned as needed.
 
 5. **Slack Integration**: The response from ChatGPT is sent to the Slack `postMessage` API endpoint, which posts the response in the respective Slack channel.
 
@@ -88,25 +88,26 @@ This architecture allows the SlackGPT bot to interact seamlessly with users in S
 
 The following table lists the configurable variables in the `variables.tf` file:
 
-| Variable Name                       | Description                                                                              | Default Value             | Sensitive |
-| ----------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------- | --------- |
-| dynamodb_table_name                 | Table to store app state                                                                 | "slackgpt"                | No        |
-| secret_mgr_path                     | Path to store secrets in AWS secret manager                                              | "slackgpt"                | No        |
-| openai_default_chat_model           | Default chat model to use                                                                | "gpt-3.5-turbo"           | No        |
-| openai_api_key                      | OpenAI API key                                                                           | N/A                       | Yes       |
-| slack_signing_key                   | Slack signing key                                                                        | N/A                       | Yes       |
-| slack_bot_token                     | Slack bot token                                                                          | N/A                       | Yes       |
-| slack_bot_display_name              | Slack bot display name                                                                   | "slackgpt"                | No        |
-| event_consumer_lambda_function_name | Name of the lambda function that receives slack events and sends them to the background  | "slackgpt-event-consumer" | No        |
-| job_worker_lambda_function_name     | Name of the lambda function that processes the jobs and sends the response back to slack | "slackgpt-job-worker"     | No        |
-| lambda_execution_role_name          | Name of the iam role that gets created for the lambda function                           | "slackgpt-lambda-role"    | No        |
-| execution_timeout                   | Max amount of seconds that the lambda function can run before its terminated             | 60                        | No        |
-| api_gateway_name                    | Name of the api gateway                                                                  | "SlackGPT"                | No        |
-| aws_region                          | AWS region to deploy resources                                                           | "us-east-1"               | No        |
-| api_gateway_stage_name              | Name of the api gateway stage                                                            | "main"                    | No        |
-| api_gateway_resource_path           | Last part of the api gateway endpoint path                                               | "slackgpt"                | No        |
-| sqs_queue_name                      | Name of the sqs queue for sending the processing job to the background                   | "slackgpt"                | No        |
-
+| Variable Name                       | Description                                                                                      | Default Value             | Sensitive |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------- | --------- |
+| dynamodb_table_name                 | Table to store app state                                                                         | "slackgpt"                | No        |
+| secret_mgr_path                     | Path to store secrets in AWS secret manager                                                      | "slackgpt"                | No        |
+| openai_default_chat_model           | Default chat model to use                                                                        | "gpt-3.5-turbo"           | No        |
+| openai_model_max_tokens             | Max allowed tokens for the specified openai model (see https://platform.openai.com/docs/models). | 4096                      | No        |
+| openai_api_key                      | OpenAI API key                                                                                   | N/A                       | Yes       |
+| slack_signing_key                   | Slack signing key                                                                                | N/A                       | Yes       |
+| slack_bot_token                     | Slack bot token                                                                                  | N/A                       | Yes       |
+| slack_bot_display_name              | Slack bot display name                                                                           | "slackgpt"                | No        |
+| event_consumer_lambda_function_name | Name of the lambda function that receives slack events and sends them to the background          | "slackgpt-event-consumer" | No        |
+| job_worker_lambda_function_name     | Name of the lambda function that processes the jobs and sends the response back to slack         | "slackgpt-job-worker"     | No        |
+| lambda_execution_role_name          | Name of the iam role that gets created for the lambda function                                   | "slackgpt-lambda-role"    | No        |
+| lambda_memory_size                  | Amount of memory in MB that the lambda function can use at runtime                               | 512                       | No        |
+| execution_timeout                   | Max amount of seconds that the lambda function can run before its terminated                     | 60                        | No        |
+| api_gateway_name                    | Name of the api gateway                                                                          | "SlackGPT"                | No        |
+| aws_region                          | AWS region to deploy resources                                                                   | "us-east-1"               | No        |
+| api_gateway_stage_name              | Name of the api gateway stage                                                                    | "main"                    | No        |
+| api_gateway_resource_path           | Last part of the api gateway endpoint path                                                       | "slackgpt"                | No        |
+| sqs_queue_name                      | Name of the sqs queue for sending the processing job to the background                           | "slackgpt"                | No        |
 
 ## Contributing
 
