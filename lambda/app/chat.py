@@ -77,42 +77,36 @@ class Chat:
             },
         )
 
-    def prune_messages(self, new_message):
+    def prune_history(self, new_message):
         # remove messages from chat history until the number of tokens is less than the max
-        # tokens allowed by the model
-        max_tokens = env.openai_model_max_tokens
+        # chat history specified, or until the new message is the only one left.
+        max_tokens = env.chat_history_max_tokens
         logging.info(f"Pruning messages (max tokens: {max_tokens})")
-        while True:
-            messages = self.messages
-            token_count = num_tokens_from_messages(
-                messages + [new_message], model=self.model)
-            if token_count <= max_tokens:
-                logging.info(
-                    f"Token count ({token_count}) <= max tokens ({max_tokens}).")
-                break
+        while (
+            len(messages := self.messages) > 0
+            and (token_count := num_tokens_from_messages(messages + [new_message],
+                                                         model=self.model)) > max_tokens
+        ):
             logging.info(
                 f"Removing message (token count: {token_count}, max tokens: {max_tokens})")
             self.pop_message()
+        logging.info(f"Final history token count: {token_count}")
 
     # send a message to chatgpt, with previous chat history, and wait for a response
     def send_message(self, content):
         user_message = {"role": "system", "content": content}
-        self.prune_messages(user_message)
-        for retry in range(3):
-            try:
-                chat = openai.ChatCompletion.create(
-                    model=self.model,
-                    messages=self.messages + [user_message])
-            except openai.error.InvalidRequestError as e:
-                if "reduce the length of the messages" in e.message:
-                    # chat is too long and the prune_messages() function failed to prune enough messages
-                    self.pop_message()
-                    sleep(1)
-                    continue
-                else:
-                    raise e
-            break
-        response = chat["choices"][0]["message"]["content"]
+        self.prune_history(user_message)
+        try:
+            chat = openai.ChatCompletion.create(
+                model=self.model,
+                messages=self.messages + [user_message])
+            response = chat["choices"][0]["message"]["content"]
+        except openai.error.InvalidRequestError as e:
+            if "reduce the length of the messages" in e.message:
+                # chat is too long and the prune_history() function failed to prune enough messages
+                response = "Error: User input is too long. Please try again."
+            else:
+                response = f"Unhandled exception: {e.message}"
         response_message = {"role": "assistant", "content": response}
         new_messages = [user_message, response_message]
         self.push_messages(new_messages)
