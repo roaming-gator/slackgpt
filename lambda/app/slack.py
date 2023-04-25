@@ -12,6 +12,7 @@ from .chat import Chat
 
 @dataclasses.dataclass
 class SlackEvent:
+    # this gets pushed on the worker queue
     channel: str
     text: str
 
