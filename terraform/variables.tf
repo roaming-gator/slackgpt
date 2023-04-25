@@ -13,9 +13,9 @@ variable "openai_default_chat_model" {
   default     = "gpt-3.5-turbo-0301"
 }
 
-variable "openai_model_max_tokens" {
-  description = "Max allowed tokens for the specified openai model (see https://platform.openai.com/docs/models)."
-  default     = 4096
+variable "chat_history_max_tokens" {
+  description = "Max tokens allowed in chat history (i.e. history plus user request - everything before chatgpt response). Oldest messages in the history will be pruned to stay under this number. Should be the max tokens for the chosen model (see https://platform.openai.com/docs/models) minus enough room for chatgpt response."
+  default     = 3072
 }
 
 variable "openai_api_key" {
