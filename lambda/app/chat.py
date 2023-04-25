@@ -90,10 +90,11 @@ class Chat:
             logging.info(
                 f"Removing message (token count: {token_count}, max tokens: {max_tokens})")
             self.pop_message()
-        logging.info(f"Final history token count: {token_count}")
+        logging.info("Remaining messages in history: {}".format(
+            len(self.messages)))
 
-    # send a message to chatgpt, with previous chat history, and wait for a response
     def send_message(self, content):
+        # send a message to chatgpt, with previous chat history, and wait for a response
         user_message = {"role": "system", "content": content}
         self.prune_history(user_message)
         try:
