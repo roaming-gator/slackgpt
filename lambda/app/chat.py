@@ -80,10 +80,18 @@ class Chat:
         # remove messages from chat history until the number of tokens is less than the max
         # tokens allowed by the model
         max_tokens = env.openai_model_max_tokens
-        messages = self.messages
-        while num_tokens_from_messages(messages + [new_message], model=self.model) > max_tokens:
-            self.pop_message()
+        logging.info(f"Pruning messages (max tokens: {max_tokens})")
+        while True:
             messages = self.messages
+            token_count = num_tokens_from_messages(
+                messages + [new_message], model=self.model)
+            if token_count <= max_tokens:
+                logging.info(
+                    f"Token count ({token_count}) <= max tokens ({max_tokens}).")
+                break
+            logging.info(
+                f"Removing message (token count: {token_count}, max tokens: {max_tokens})")
+            self.pop_message()
 
     # send a message to chatgpt, with previous chat history, and wait for a response
     def send_message(self, content):
