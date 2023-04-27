@@ -6,7 +6,7 @@ locals {
   # Slack bot token secret name in AWS secret manager
   slack_bot_token_secret_name = "slack_bot_token"
   # temporary python package directory
-  python_package_dir = /tmp/.slackgpt/package"
+  python_package_dir = "/tmp/.slackgpt/package"
   # generate source hash manually based on the files in the lambda directory
   package_source_hash = sha1(jsonencode({
     for f in fileset("${path.module}/../lambda/", "**") :
