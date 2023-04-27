@@ -20,6 +20,9 @@ resource "null_resource" "python_scripts_setup" {
       set -e
       FOLDER_PATH="${path.module}/../lambda/"
       TEMP_DIR="${local.python_package_dir}"
+      # Remove the temporary directory if it already exists
+      rm -rf "$TEMP_DIR"
+      # Create the temporary directory
       mkdir -p "$TEMP_DIR"
       echo "Temporary directory created: $TEMP_DIR"
       
