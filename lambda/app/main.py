@@ -19,8 +19,4 @@ def job_worker(event, context):
     # this lambda function processes jobs from the worker queue
     logging.info(f"Received event:\n{event}\nWith context:\n{context}")
     records = event['Records']
-    result = worker.process_records(records)
-    return {
-        "statusCode": result.status_code,
-        "body": result.message
-    }
+    worker.process_records(records)
