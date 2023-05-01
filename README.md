@@ -1,6 +1,6 @@
 # SlackGPT
 
-![screenshot](docs/images/screenshot.png)
+![screenshot](images/screenshot.png)
 
 This repository contains the source code for a serverless AI Slack Bot called SlackGPT, which allows users to interact with ChatGPT in their Slack channels. The bot is built using AWS Lambda and Terraform for infrastructure management.
 
