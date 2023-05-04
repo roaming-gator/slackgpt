@@ -97,6 +97,7 @@ class Chat:
         # send a message to chatgpt, with previous chat history, and wait for a response
         user_message = {"role": "system", "content": content}
         self.prune_history(user_message)
+        response = "Could not generate response. Please try again later."
         try:
             chat = openai.ChatCompletion.create(
                 model=self.model,
