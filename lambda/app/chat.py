@@ -97,7 +97,6 @@ class Chat:
         # send a message to chatgpt, with previous chat history, and wait for a response
         user_message = {"role": "system", "content": content}
         self.prune_history(user_message)
-        response = "Could not generate response. Please try again later."
         try:
             chat = openai.ChatCompletion.create(
                 model=self.model,
@@ -111,5 +110,7 @@ class Chat:
                 # chat is too long and the prune_history() function failed to prune enough messages
                 response = "Error: User input is too long. Please try again."
             else:
-                response = f"Unhandled exception: {e.message}"
+                response = f"Unhandled openai exception: {e.message}"
+        except Exception as e:
+                response = "Could not generate response. Please try again later."
         return response
