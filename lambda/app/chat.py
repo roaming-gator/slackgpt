@@ -112,5 +112,5 @@ class Chat:
             else:
                 response = f"Unhandled openai exception: {e.message}"
         except Exception as e:
-                response = "Could not generate response. Please try again later."
+            response = "Could not generate response. Please try again later."
         return response
