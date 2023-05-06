@@ -64,6 +64,7 @@ class Chat:
         self.state_table.update_item(
             Key={"chatid": self.chatid},
             UpdateExpression="REMOVE messages[0]",
+            ConditionExpression="size(messages) > 0",
         )
 
     def push_messages(self, messages):
@@ -110,5 +111,7 @@ class Chat:
                 # chat is too long and the prune_history() function failed to prune enough messages
                 response = "Error: User input is too long. Please try again."
             else:
-                response = f"Unhandled exception: {e.message}"
+                response = f"Unhandled openai exception: {e.message}"
+        except Exception as e:
+            response = "Could not generate response. Please try again later."
         return response
