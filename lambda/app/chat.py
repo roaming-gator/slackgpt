@@ -104,13 +104,15 @@ class Chat:
                 model=self.model,
                 messages=self.messages + [user_message])
             response = chat["choices"][0]["message"]["content"]
+            response_message = {"role": "assistant", "content": response}
+            new_messages = [user_message, response_message]
+            self.push_messages(new_messages)
         except openai.error.InvalidRequestError as e:
             if "reduce the length of the messages" in e.message:
                 # chat is too long and the prune_history() function failed to prune enough messages
                 response = "Error: User input is too long. Please try again."
             else:
-                response = f"Unhandled exception: {e.message}"
-        response_message = {"role": "assistant", "content": response}
-        new_messages = [user_message, response_message]
-        self.push_messages(new_messages)
+                response = f"Unhandled openai exception: {e.message}"
+        except Exception as e:
+            response = "Could not generate response. Please try again later."
         return response
