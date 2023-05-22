@@ -64,7 +64,10 @@ class Chat:
         self.state_table.update_item(
             Key={"chatid": self.chatid},
             UpdateExpression="REMOVE messages[0]",
-            ConditionExpression="size(messages) > 0",
+            ConditionExpression="size(messages) > :zero",
+            ExpressionAttributeValues={
+                ":zero": 0,
+            },
         )
 
     def push_messages(self, messages):
